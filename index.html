@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Muscat Adventure Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --navy:#0B2A4A; --sea:#0F8B8D; --sun:#FFB703; --coral:#EF476F; --mint:#06A77D;
+  --ink:#0B2A4A; --panel:#FFFFFF; --chip:#EAF7F7; --soft:#F1F5FB; --line:#B8CBE0;
+  --bg1:#7CC8EE; --bg2:#FFD6A5;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Trebuchet MS",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#EEF3FF; --panel:#16263F; --chip:#1D3A4A; --soft:#1C2E4B; --line:#3C5578;
+    --bg1:#0E2140; --bg2:#3A2A58;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#EEF3FF; --panel:#16263F; --chip:#1D3A4A; --soft:#1C2E4B; --line:#3C5578;
+  --bg1:#0E2140; --bg2:#3A2A58;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;font-family:var(--body);font-weight:600;color:var(--ink);
+  background:var(--bg1);background:linear-gradient(170deg,var(--bg1),var(--bg2)) fixed;min-height:100vh;line-height:1.45}
+.wrap{max-width:860px;margin:0 auto;padding:10px 12px 24px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 4px 10px}
+.brand{font-family:var(--display);font-weight:800;font-size:1.25rem;color:#fff;text-shadow:0 2px 0 rgba(11,42,74,.45)}
+.pills{display:flex;gap:8px;align-items:center}
+.pill{background:var(--panel);color:var(--ink);border-radius:999px;padding:4px 14px;font-family:var(--display);font-weight:800;font-size:1.05rem;border:0;min-height:38px}
+button{font-family:inherit;cursor:pointer}
+.panel{background:var(--panel);border-radius:22px;padding:16px;box-shadow:0 6px 0 rgba(11,42,74,.18);margin-bottom:14px}
+h1,h2,h3{font-family:var(--display);margin:.2em 0;line-height:1.15}
+h2{font-size:1.6rem}
+.lead{margin:.3em 0 .8em;font-size:1.05rem}
+.small{font-size:.9rem;opacity:.8}
+.tag{margin:0;font-size:.9rem;color:var(--sea);font-weight:800}
+
+/* hero */
+.hero{position:relative;border-radius:24px;overflow:hidden;box-shadow:0 6px 0 rgba(11,42,74,.25);margin-bottom:14px}
+.hero svg{display:block;width:100%;height:auto}
+.plane{position:absolute;top:14%;left:-12%;font-size:2.4rem;animation:fly 8s linear 1 forwards}
+@keyframes fly{to{left:108%;top:2%}}
+.herotext{position:absolute;left:0;right:0;top:0;padding:14px 18px;color:#fff}
+.herotext h1{font-size:clamp(1.8rem,7vw,3rem);text-shadow:0 3px 0 rgba(11,42,74,.5);margin:0}
+.herotext p{margin:.2em 0 0;font-weight:800;text-shadow:0 2px 0 rgba(11,42,74,.5)}
+
+/* buttons */
+.btn{background:var(--coral);color:#fff;border:0;border-radius:999px;padding:11px 22px;font-family:var(--display);font-weight:800;font-size:1.1rem;min-height:46px;box-shadow:0 4px 0 rgba(0,0,0,.2)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.btn.ghost{background:var(--soft);color:var(--ink)}
+.btn.big{font-size:1.3rem;padding:14px 28px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.back:focus-visible,.opt:focus-visible,.tile:focus-visible,.stop:focus-visible,.mcard:focus-visible,.chip:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.back{background:var(--soft);color:var(--ink);border:0;border-radius:999px;padding:8px 14px;font-weight:800;min-height:40px}
+input[type=text]{font:inherit;font-weight:800;padding:12px 14px;border-radius:14px;border:3px solid var(--line);width:100%;max-width:340px;background:var(--panel);color:var(--ink)}
+
+/* hub */
+.progress{height:14px;border-radius:99px;background:var(--soft);overflow:hidden;margin:6px 0 14px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--sun),var(--coral));border-radius:99px;transition:width .5s}
+.stops{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.stop{background:var(--soft);border:3px solid var(--line);border-radius:20px;padding:12px;text-align:center;color:var(--ink);min-height:132px;position:relative}
+.stop:hover{border-color:var(--sea)}
+.stop .em{font-size:2.2rem;display:block}
+.stop b{font-family:var(--display);font-size:1.1rem;display:block}
+.stop span.t{font-size:.85rem;color:var(--sea);font-weight:800}
+.stop .st{display:block;margin-top:4px;letter-spacing:2px}
+.stop.done{border-color:var(--mint);background:var(--chip)}
+.stop.done::after{content:"STAMPED";position:absolute;top:8px;right:-4px;transform:rotate(14deg);border:2px solid var(--coral);color:var(--coral);font-family:var(--display);font-size:.7rem;padding:0 6px;border-radius:6px;background:var(--panel)}
+
+/* level shell */
+.lvlhead{display:flex;gap:12px;align-items:center;margin:4px 0 10px;color:#fff}
+.lvlhead h2{margin:0;text-shadow:0 2px 0 rgba(11,42,74,.45)}
+.lvlhead .tag{color:#fff;opacity:.95;text-shadow:0 1px 0 rgba(11,42,74,.45)}
+.qhead{display:flex;justify-content:space-between;font-weight:800;margin-bottom:6px}
+
+/* dnd */
+.chip{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;margin:4px;background:var(--chip);color:var(--ink);border:2px solid var(--sea);border-radius:14px;font-weight:800;font-size:1.02rem;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;box-shadow:0 3px 0 rgba(15,139,141,.35)}
+.chip .ce{font-size:1.3rem}
+.chip.dragging{opacity:.25}
+.chip.selected{outline:3px solid var(--sun)}
+.chip.good{background:#C9F7E4;border-color:var(--mint);color:#0B2A4A;box-shadow:none;cursor:default}
+.ghost{position:fixed;z-index:1000;pointer-events:none;transform:rotate(4deg) scale(1.06);box-shadow:0 10px 20px rgba(0,0,0,.3)}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.zone.over{outline:3px dashed var(--sun);background:rgba(255,183,3,.18)}
+.slot{display:flex;align-items:center;gap:10px;min-height:60px;border:2px dashed var(--line);border-radius:14px;padding:4px 10px;margin:7px 0;background:var(--soft)}
+.slotno{width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-family:var(--display);flex:none}
+.slothint{font-size:.85rem;opacity:.75;min-width:78px}
+.pool{display:flex;flex-wrap:wrap;justify-content:center;min-height:76px;border:2px dashed var(--line);border-radius:16px;padding:6px;margin-top:12px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bucket{border:3px dashed var(--line);border-radius:18px;padding:8px;min-height:210px;background:var(--soft)}
+.bucket h3{font-size:1.5rem;margin:0}
+.bucket p{margin:0 0 4px;font-size:.9rem}
+.bucket.ed{border-color:var(--sun)}
+.bucket.ing{border-color:var(--sea)}
+.qcard{text-align:center}
+.qcard .big{font-size:3.4rem}
+.sent{font-size:1.35rem;font-weight:800;margin:.2em 0 .6em}
+.gap{display:inline-block;min-width:120px;border-bottom:4px dashed var(--coral);text-align:center;padding:2px 8px;margin:0 4px;border-radius:8px}
+.gap.good{border-bottom:4px solid var(--mint);background:#C9F7E4;color:#0B2A4A}
+.dots{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
+.dots i{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--sun)}
+.dots i.ok{background:var(--mint)}
+#msg,#fb{margin-top:10px;font-weight:800;min-height:1.4em}
+.fb{padding:10px 14px;border-radius:14px;margin-bottom:10px}
+.fb.good{background:#C9F7E4;color:#0B2A4A}
+.fb.bad{background:#FFD9E0;color:#5A0B1E}
+
+/* quiz */
+.bar{height:14px;background:var(--soft);border-radius:99px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;width:100%;background:var(--mint);transition:width .1s linear}
+.bar i.hot{background:var(--coral)}
+.qtext{font-size:1.3rem;font-weight:800;margin:.2em 0 .7em}
+.opts{display:grid;gap:10px;margin-bottom:10px}
+.opts.tf{grid-template-columns:1fr 1fr}
+.opt{background:var(--soft);color:var(--ink);border:3px solid var(--line);border-radius:16px;padding:12px 14px;text-align:left;font-weight:800;font-size:1.05rem;min-height:52px}
+.opts.tf .opt{text-align:center;font-family:var(--display);font-size:1.3rem}
+.opt:hover:not(:disabled){border-color:var(--sea)}
+.opt.good{background:#C9F7E4;border-color:var(--mint);color:#0B2A4A}
+.opt.bad{background:#FFD9E0;border-color:var(--coral);color:#5A0B1E}
+
+/* memory */
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:520px;margin:10px auto}
+.mcard{aspect-ratio:1;border-radius:16px;border:3px solid var(--navy);background:linear-gradient(135deg,var(--sea),var(--navy));color:#fff;font-size:1.9rem;display:grid;place-items:center;font-family:var(--display);font-weight:800;padding:2px}
+.mcard.open{background:var(--chip);color:var(--ink);font-size:1.05rem;border-color:var(--sun)}
+.mcard.open.emo{font-size:2.3rem}
+.mcard.match{background:#C9F7E4;border-color:var(--mint);color:#0B2A4A}
+
+/* builder */
+.answer,.tiles{display:flex;flex-wrap:wrap;gap:8px;min-height:62px;padding:8px;border-radius:16px}
+.answer{border:3px dashed var(--sea);background:var(--soft);margin:6px 0 10px}
+.tile{background:var(--sun);color:#0B2A4A;border:0;border-radius:12px;padding:10px 14px;font-weight:800;font-size:1.05rem;min-height:44px;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.answer .tile{background:var(--chip);color:var(--ink);box-shadow:0 3px 0 rgba(15,139,141,.4);border:2px solid var(--sea)}
+
+/* overlay, pop, certificate */
+.overlay{position:fixed;inset:0;background:rgba(11,42,74,.65);display:grid;place-items:center;z-index:900;padding:16px}
+.modal{background:var(--panel);color:var(--ink);border-radius:26px;padding:22px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 0 rgba(0,0,0,.25);animation:pop .35s}
+@keyframes pop{from{transform:scale(.7);opacity:0}}
+.modal .big{font-size:2.6rem;letter-spacing:4px}
+.modal .row{justify-content:center}
+.fpop{position:fixed;z-index:1100;pointer-events:none;transform:translateX(-50%);font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--mint);text-shadow:0 2px 0 #fff;animation:up .9s forwards}
+.fpop.bad{color:var(--coral)}
+@keyframes up{to{transform:translate(-50%,-60px);opacity:0}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:1200}
+.cert{text-align:center;border:6px double var(--sun);padding:24px 16px}
+.cert .seal{font-size:3.6rem}
+.cert .cname{font-size:clamp(2rem,9vw,3.2rem);color:var(--coral);margin:.1em 0}
+.cert .rank{font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--sea)}
+.by{font-weight:800;margin-top:14px}
+.foot{text-align:center;color:#fff;font-weight:800;text-shadow:0 1px 0 rgba(11,42,74,.6);padding:6px}
+details{background:var(--soft);border-radius:14px;padding:8px 12px;margin:8px 0}
+summary{font-weight:800;cursor:pointer}
+details ul{margin:6px 0 2px;padding-left:20px}
+@media (max-width:480px){.buckets{gap:6px}.bucket{padding:6px}.slothint{min-width:60px}}
+@media print{body{background:#fff}.noprint,.topbar,.foot{display:none!important}.panel{box-shadow:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">🧭 Muscat Adventure Quest</div>
+    <div class="pills"><span class="pill" aria-live="polite">⭐ <span id="score">0</span></span><button class="pill" id="mute" aria-label="Sound on or off">🔊</button></div>
+  </div>
+  <main id="screen"></main>
+  <div class="foot">Created by T.Badria Alfalahi</div>
+</div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const screen=$('#screen');
+const state={name:'',score:0,stars:{}};
+let selected=null, activeTimer=null, muted=false, audioCtx=null;
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- sound ---------- */
+function tone(f,d=.12,type='sine',when=0,vol=.07){
+  if(muted)return;
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type=type;o.frequency.value=f;g.gain.value=vol;
+    o.connect(g);g.connect(audioCtx.destination);
+    const t=audioCtx.currentTime+when;
+    o.start(t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.stop(t+d+.03);
+  }catch(e){}
+}
+const sfx={
+  ok(){tone(660,.1,'triangle');tone(880,.15,'triangle',.09)},
+  no(){tone(170,.25,'sawtooth',0,.05)},
+  tick(){tone(900,.04,'square',0,.025)},
+  win(){[523,659,784,1047].forEach((f,i)=>tone(f,.2,'triangle',i*.11))}
+};
+$('#mute').onclick=()=>{muted=!muted;$('#mute').textContent=muted?'🔇':'🔊'};
+
+/* ---------- helpers ---------- */
+function updateScore(){$('#score').textContent=state.score}
+function pop(text,el,cls=''){
+  if(!el)return;
+  const r=el.getBoundingClientRect();
+  const d=document.createElement('div');
+  d.className='fpop '+cls;d.textContent=text;
+  d.style.left=(r.left+r.width/2)+'px';d.style.top=r.top+'px';
+  document.body.appendChild(d);setTimeout(()=>d.remove(),950);
+}
+function confetti(){
+  if(reduceMotion)return;
+  const c=$('#confetti'),ctx=c.getContext('2d');
+  c.width=innerWidth;c.height=innerHeight;
+  const cols=['#FFB703','#EF476F','#06D6A0','#118AB2','#ffffff'];
+  const P=Array.from({length:150},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.4,vx:(Math.random()-.5)*4,vy:2+Math.random()*4,s:6+Math.random()*7,r:Math.random()*6,c:cols[Math.floor(Math.random()*cols.length)]}));
+  let f=0;
+  (function loop(){
+    ctx.clearRect(0,0,c.width,c.height);
+    P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.r+=.12;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/3,p.s,p.s*.6);ctx.restore()});
+    if(++f<220)requestAnimationFrame(loop);else ctx.clearRect(0,0,c.width,c.height);
+  })();
+}
+function clearTimer(){if(activeTimer){clearInterval(activeTimer);activeTimer=null}}
+function modal({emoji,title,text,buttons}){
+  const o=document.createElement('div');o.className='overlay';
+  o.innerHTML=`<div class="modal" role="dialog" aria-modal="true"><div class="big">${emoji}</div><h3>${title}</h3><p>${text}</p><div class="row">${buttons.map((b,i)=>`<button class="btn ${b.cls||''}" data-i="${i}">${b.label}</button>`).join('')}</div></div>`;
+  document.body.appendChild(o);
+  $$('button',o).forEach(b=>b.onclick=()=>{o.remove();buttons[+b.dataset.i].fn()});
+  const first=$('button',o);if(first)first.focus();
+}
+function shell(n,body){
+  clearTimer();selected=null;
+  const L=LV[n-1];
+  screen.innerHTML=`<section class="lvl"><div class="lvlhead"><button class="back" id="back">Map</button><div><h2>${L.e} ${L.t}</h2><p class="tag">${L.type}</p></div></div>${body}</section>`;
+  $('#back').onclick=hub;
+  scrollTo(0,0);
+}
+function finish(n,stars,text){
+  clearTimer();
+  state.stars[n]=Math.max(state.stars[n]||0,stars);
+  sfx.win();confetti();
+  const next=n<7;
+  modal({
+    emoji:'⭐'.repeat(stars)+'☆'.repeat(3-stars),
+    title:stars===3?'Fantastic!':stars===2?'Great job!':'Good try!',
+    text:text+' You earned a passport stamp!',
+    buttons:[
+      {label:'Play again',cls:'ghost',fn:()=>LV[n-1].run()},
+      {label:next?'Next stop ✈️':'See my passport',fn:()=>next?LV[n].run():hub()}
+    ]
+  });
+}
+function failLevel(n,text){
+  clearTimer();sfx.no();
+  modal({emoji:'💔',title:'Out of hearts!',text,buttons:[{label:'Back to map',cls:'ghost',fn:hub},{label:'Try again',fn:()=>LV[n-1].run()}]});
+}
+
+/* ---------- drag and drop engine (mouse, touch, and tap-to-place) ---------- */
+function zoneAt(x,y){return document.elementsFromPoint(x,y).find(el=>el.classList&&el.classList.contains('zone'))}
+function setupDnD(root,onDrop){
+  root.addEventListener('pointerdown',e=>{
+    const chip=e.target.closest('.chip');
+    if(!chip||chip.classList.contains('locked')||e.button>0)return;
+    const sx=e.clientX,sy=e.clientY,rect=chip.getBoundingClientRect();
+    let ghost=null;
+    const move=ev=>{
+      if(!ghost&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>6){
+        ghost=chip.cloneNode(true);ghost.classList.add('ghost');ghost.style.width=rect.width+'px';
+        document.body.appendChild(ghost);chip.classList.add('dragging');
+      }
+      if(ghost){
+        ghost.style.left=(ev.clientX-rect.width/2)+'px';ghost.style.top=(ev.clientY-rect.height/2)+'px';
+        $$('.zone.over').forEach(z=>z.classList.remove('over'));
+        const z=zoneAt(ev.clientX,ev.clientY);if(z)z.classList.add('over');
+      }
+    };
+    const up=ev=>{
+      removeEventListener('pointermove',move);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);
+      $$('.zone.over').forEach(z=>z.classList.remove('over'));
+      if(ghost){
+        ghost.remove();chip.classList.remove('dragging');
+        const z=zoneAt(ev.clientX,ev.clientY);
+        if(z&&root.contains(z))onDrop(chip,z);
+      }else{
+        if(selected===chip){chip.classList.remove('selected');selected=null}
+        else{$$('.chip.selected').forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');selected=chip}
+      }
+    };
+    addEventListener('pointermove',move);addEventListener('pointerup',up);addEventListener('pointercancel',up);
+  });
+  root.addEventListener('click',e=>{
+    const z=e.target.closest('.zone');
+    if(z&&selected&&!e.target.closest('.chip')){const c=selected;selected=null;c.classList.remove('selected');onDrop(c,z)}
+  });
+}
+
+/* ---------- start and hub ---------- */
+const SKY=`<svg viewBox="0 0 800 270" role="img" aria-label="Illustration of Muscat with mosque, mountains, sea and a dhow boat">
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4DB3E6"/><stop offset=".65" stop-color="#FFD9A0"/><stop offset="1" stop-color="#FFB38A"/></linearGradient></defs>
+<rect width="800" height="270" fill="url(#sky)"/>
+<circle cx="650" cy="135" r="48" fill="#FFB703"/>
+<polygon points="0,200 80,120 160,175 250,100 350,190 450,125 540,195 640,140 720,185 800,150 800,270 0,270" fill="#8E5A44"/>
+<polygon points="0,215 120,165 230,210 360,160 480,215 600,170 720,212 800,185 800,270 0,270" fill="#B07A57"/>
+<g fill="#FFF6E6"><rect x="300" y="165" width="150" height="65"/><ellipse cx="375" cy="165" rx="48" ry="40"/><rect x="284" y="105" width="14" height="125"/><polygon points="284,105 291,86 298,105"/><rect x="452" y="120" width="14" height="110"/><polygon points="452,120 459,102 466,120"/></g>
+<path d="M360 230v-30a15 15 0 0 1 30 0v30z" fill="#0B2A4A"/>
+<circle cx="375" cy="118" r="5" fill="#FFB703"/>
+<rect x="0" y="228" width="800" height="42" fill="#0F8B8D"/>
+<path d="M0 240q25-9 50 0t50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0" fill="none" stroke="#7FE0DC" stroke-width="3"/>
+<path d="M0 256q25-9 50 0t50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0 50 0" fill="none" stroke="#7FE0DC" stroke-width="3" opacity=".6"/>
+<g><path d="M110 232h110l-14 18h-82z" fill="#5A3420"/><rect x="163" y="170" width="4" height="62" fill="#5A3420"/><polygon points="167,172 215,226 167,226" fill="#FFF6E6"/><polygon points="163,180 120,226 163,226" fill="#FFB703"/></g>
+<g stroke="#5A3420" stroke-width="5" fill="none"><path d="M720 232q-6-40 4-72"/></g>
+<g fill="#06A77D"><path d="M724 160q-30-10-46 8q26-4 46-8z"/><path d="M724 160q30-12 48 6q-28-2-48-6z"/><path d="M724 160q-8-26-30-30q18 10 30 30z"/><path d="M724 160q10-26 32-28q-20 8-32 28z"/></g>
+</svg>`;
+
+function start(){
+  clearTimer();
+  screen.innerHTML=`<div class="hero">${SKY}<div class="herotext"><h1>Muscat Adventure Quest</h1><p>Grade 7 English. Unit 1, Book Club: My Muscat Diary</p></div>${reduceMotion?'':'<div class="plane" aria-hidden="true">✈️</div>'}</div>
+  <section class="panel">
+    <h2>Ready for take-off?</h2>
+    <p class="lead">Help the family explore Muscat! Play 7 stops with drag and drop, quizzes, memory cards and word puzzles. Collect stamps in your passport and win a certificate.</p>
+    <label for="nm" class="small">Your explorer name</label><br>
+    <input type="text" id="nm" maxlength="24" placeholder="Type your name" autocomplete="off">
+    <div class="row"><button class="btn big" id="go">Start the journey ✈️</button></div>
+  </section>`;
+  const go=()=>{state.name=$('#nm').value.trim()||'Explorer';sfx.ok();hub()};
+  $('#go').onclick=go;$('#nm').onkeydown=e=>{if(e.key==='Enter')go()};
+}
+
+function hub(){
+  clearTimer();selected=null;
+  const done=Object.keys(state.stars).length;
+  screen.innerHTML=`<section class="panel">
+    <h2>🛂 ${esc(state.name||'Explorer')}'s Passport</h2>
+    <p class="lead">Tap a stop to play. Win stars to earn a stamp at every stop.</p>
+    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="7" aria-valuenow="${done}"><i style="width:${done/7*100}%"></i></div>
+    <div class="stops">${LV.map((l,i)=>{const s=state.stars[i+1]||0;return `<button class="stop ${s?'done':''}" data-n="${i+1}"><span class="em">${l.e}</span><b>${l.t}</b><span class="t">${l.type}</span><span class="st" aria-label="${s} stars">${s?'⭐'.repeat(s)+'☆'.repeat(3-s):'☆☆☆'}</span></button>`}).join('')}</div>
+    <div class="row"><button class="btn big" id="cert" ${done<7?'disabled':''}>🎓 Get my certificate</button></div>
+    ${done<7?`<p class="small">Collect all 7 stamps to unlock your certificate (${done} of 7).</p>`:''}
+  </section>`;
+  $$('.stop').forEach(b=>b.onclick=()=>LV[+b.dataset.n-1].run());
+  $('#cert').onclick=certificate;
+}
+
+function certificate(){
+  const total=Object.values(state.stars).reduce((a,b)=>a+b,0);
+  const rank=total>=19?'Muscat Master 🏆':total>=14?'Star Traveller ⭐':'Young Explorer 🧭';
+  sfx.win();confetti();
+  screen.innerHTML=`<section class="panel cert">
+    <div class="seal">🏅</div>
+    <h2>Certificate of Excellence</h2>
+    <p>This certificate is proudly awarded to</p>
+    <h1 class="cname">${esc(state.name||'Explorer')}</h1>
+    <p>for completing the <b>Muscat Adventure Quest</b><br>Grade 7 English, Unit 1, Book Club, Lesson 4</p>
+    <p class="rank">${rank}</p>
+    <p>Score: <b>${state.score}</b> points. Stars: <b>${total}</b> out of 21.</p>
+    <p class="by">Created by T.Badria Alfalahi</p>
+    <div class="row noprint" style="justify-content:center">
+      <button class="btn ghost" id="mp">Back to passport</button>
+      <button class="btn" id="pr">🖨️ Print</button>
+      <button class="btn ghost" id="rs">Play again from the start</button>
+    </div>
+  </section>`;
+  $('#mp').onclick=hub;
+  $('#pr').onclick=()=>{try{window.print()}catch(e){}};
+  $('#rs').onclick=()=>{state.score=0;state.stars={};updateScore();start()};
+}
+
+/* ---------- LEVEL 1: Plan the trip (drag and drop ordering) ---------- */
+function level1(){
+  const stops=[
+    {id:'park',n:'Al-Qurum Park',e:'🌳',o:1},
+    {id:'gal',n:'Art Gallery',e:'🖼️',o:2},
+    {id:'aqua',n:'Aquarium',e:'🐢',o:3},
+    {id:'cin',n:'Cinema',e:'🎬',o:4},
+    {id:'mus',n:'National Museum and Planetarium',e:'🪐',o:5},
+    {id:'mall',n:"Muscat's Biggest Mall",e:'🛍️',o:6},
+    {id:'opera',n:'Royal Opera House',e:'🎭',o:7},
+    {id:'souq',n:'Mutrah Souq',e:'🧺',o:0},
+    {id:'camp',n:'Desert Camp',e:'🏜️',o:0}
+  ];
+  const hints=['Sunday','Sunday','Sunday afternoon','Sunday evening','Monday','Tuesday','Tuesday evening'];
+  let tries=0;
+  shell(1,`<div class="panel">
+    <p class="lead">Drag the places into the order the family visited them. <b>Two places are not in the diary!</b></p>
+    <details><summary>📖 Need a clue from the diary?</summary><ul><li>Sunday: a park with a lake, then an art gallery, then the aquarium, then the cinema.</li><li>Monday: a museum with a planetarium.</li><li>Tuesday: the biggest mall, then a show in the evening.</li></ul></details>
+    <div id="area">
+      <div class="slots">${hints.map((h,i)=>`<div class="slot zone" data-i="${i+1}"><span class="slotno">${i+1}</span><span class="slothint">${h}</span></div>`).join('')}</div>
+      <div class="pool zone" id="pool">${shuffle(stops).map(s=>`<div class="chip" data-o="${s.o}"><span class="ce">${s.e}</span>${s.n}</div>`).join('')}</div>
+    </div>
+    <div class="row"><button class="btn" id="check">Check my route ✈️</button></div><div id="msg"></div></div>`);
+  setupDnD($('#area'),(chip,zone)=>{
+    if(chip.classList.contains('locked'))return;
+    const from=chip.parentElement;
+    if(zone.id==='pool'){zone.appendChild(chip);sfx.tick();return}
+    const old=$('.chip',zone);
+    if(old&&old!==chip){if(old.classList.contains('locked'))return;from.appendChild(old)}
+    zone.appendChild(chip);sfx.tick();
+  });
+  $('#check').onclick=()=>{
+    tries++;let ok=0,empty=0;
+    $$('.slot').forEach(s=>{
+      const c=$('.chip',s);
+      if(!c){empty++;return}
+      if(c.classList.contains('locked')){ok++;return}
+      if(+c.dataset.o===+s.dataset.i){c.classList.add('locked','good');ok++;state.score+=15;pop('+15',c,'')}
+      else{c.classList.add('shake');setTimeout(()=>{c.classList.remove('shake');$('#pool').appendChild(c)},500)}
+    });
+    updateScore();
+    if(ok===7){finish(1,tries===1?3:tries<=3?2:1,'You planned the whole trip!')}
+    else{sfx.no();$('#msg').textContent=empty?`Fill all 7 stops first. ${ok} correct so far.`:`${ok} stop${ok===1?' is':'s are'} in the right place. The others flew back to the pool. Try again!`}
+  };
+}
+
+/* ---------- quiz engine (used by levels 2 and 5) ---------- */
+function quiz(n,cfg){
+  const {qs,time,lives,tf}=cfg;
+  let i=0,correct=0,hearts=lives||0;
+  shell(n,`<div class="panel"><div class="qhead"><span id="qn"></span><span id="hearts"></span></div><div class="bar"><i id="bar"></i></div><div id="qbox"></div></div>`);
+  function show(){
+    const q=qs[i];
+    $('#qn').textContent=`Question ${i+1} of ${qs.length}`;
+    if(lives)$('#hearts').textContent='❤️'.repeat(hearts)+'🖤'.repeat(lives-hearts);
+    const opts=tf?q.o:shuffle(q.o);
+    $('#qbox').innerHTML=`<p class="qtext">${q.q}</p><div class="opts ${tf?'tf':''}">${opts.map(o=>`<button class="opt" data-o="${esc(o)}">${tf?(o==='True'?'✅ ':'❌ '):''}${o}</button>`).join('')}</div><div id="fb"></div>`;
+    const total=time*10;let left=total,answered=false;
+    const bar=$('#bar');bar.style.width='100%';bar.classList.remove('hot');
+    clearTimer();
+    activeTimer=setInterval(()=>{
+      left--;bar.style.width=Math.max(0,left/total*100)+'%';
+      if(left<=total*.3){bar.classList.add('hot');if(left%10===0)sfx.tick()}
+      if(left<=0)answer(null,null);
+    },100);
+    $$('.opt').forEach(b=>b.onclick=()=>answer(b.dataset.o,b));
+    function answer(o,btn){
+      if(answered)return;answered=true;clearTimer();
+      const ok=o!==null&&o===q.a;
+      $$('.opt').forEach(b=>{b.disabled=true;if(b.dataset.o===q.a)b.classList.add('good');else if(b===btn)b.classList.add('bad')});
+      if(ok){correct++;const gain=10+Math.round(Math.max(0,left)/total*10);state.score+=gain;sfx.ok();pop('+'+gain,btn,'')}
+      else{sfx.no();if(lives)hearts--;if(lives)$('#hearts').textContent='❤️'.repeat(hearts)+'🖤'.repeat(lives-hearts)}
+      updateScore();
+      const last=i===qs.length-1;
+      $('#fb').innerHTML=`<div class="fb ${ok?'good':'bad'}">${ok?'🎉 Correct!':o===null?'⏰ Time is up!':'Not this time.'} ${q.x||''}</div><button class="btn" id="nx">${(lives&&hearts===0)?'Continue':last?'Finish':'Next question'}</button>`;
+      $('#nx').focus();
+      $('#nx').onclick=()=>{
+        if(lives&&hearts===0){failLevel(n,'Do not give up! Read the diary again and try once more.');return}
+        if(last){const r=correct/qs.length;finish(n,r>=.85?3:r>=.6?2:1,`You got ${correct} out of ${qs.length} right.`)}
+        else{i++;show()}
+      };
+    }
+  }
+  show();
+}
+
+/* ---------- LEVEL 2: True or False ---------- */
+function level2(){
+  quiz(2,{tf:true,time:15,qs:[
+    {q:'The boy and his family arrived in Muscat at lunchtime.',o:['True','False'],a:'False',x:'They arrived in Muscat in the evening.'},
+    {q:'They visited the aquarium on the first afternoon of their trip.',o:['True','False'],a:'True',x:'They spent Sunday afternoon at the aquarium.'},
+    {q:'They went to the cinema after the aquarium.',o:['True','False'],a:'True',x:'On Sunday evening they went to the cinema.'},
+    {q:'They visited the museum before the art gallery.',o:['True','False'],a:'False',x:'They visited the art gallery on Sunday and the museum on Monday.'},
+    {q:'They went shopping at the biggest shopping mall in Muscat.',o:['True','False'],a:'True',x:'They shopped at Muscat\'s biggest shopping mall.'},
+    {q:'His little brother and sister stayed awake all the way back to the hotel.',o:['True','False'],a:'False',x:'They fell asleep in the taxi on the way back to the hotel.'}
+  ]});
+}
+
+/* ---------- LEVEL 3: Feelings and Things (drag and sort) ---------- */
+function level3(){
+  const words=[['tired','ed'],['tiring','ing'],['excited','ed'],['exciting','ing'],['bored','ed'],['boring','ing'],['amazed','ed'],['amazing','ing'],['interested','ed'],['interesting','ing'],['embarrassed','ed'],['embarrassing','ing']];
+  let mistakes=0,left=words.length;
+  shell(3,`<div class="panel">
+    <p class="lead">Drag each word to the right box. <b>-ed</b> words tell how <b>we feel</b>. <b>-ing</b> words tell what a <b>thing is like</b>.</p>
+    <div id="area">
+      <div class="buckets">
+        <div class="bucket ed zone" data-k="ed"><h3>-ed</h3><p>How I FEEL 😴</p><div class="bl"></div></div>
+        <div class="bucket ing zone" data-k="ing"><h3>-ing</h3><p>What it is LIKE 🎬</p><div class="bl"></div></div>
+      </div>
+      <div class="pool" id="pool">${shuffle(words).map(w=>`<div class="chip" data-k="${w[1]}">${w[0]}</div>`).join('')}</div>
+    </div><div id="msg"></div></div>`);
+  setupDnD($('#area'),(chip,zone)=>{
+    if(!zone.classList.contains('bucket')||chip.classList.contains('locked'))return;
+    if(chip.dataset.k===zone.dataset.k){
+      $('.bl',zone).appendChild(chip);chip.classList.add('locked','good');
+      state.score+=10;updateScore();pop('+10',chip,'');sfx.ok();left--;$('#msg').textContent='';
+      if(!left)setTimeout(()=>finish(3,mistakes<=2?3:mistakes<=5?2:1,`You sorted all ${words.length} words with ${mistakes} mistake${mistakes===1?'':'s'}.`),500);
+    }else{
+      mistakes++;sfx.no();chip.classList.add('shake');setTimeout(()=>chip.classList.remove('shake'),450);
+      $('#msg').textContent='Hint: "I am tired" (my feeling) but "the trip is tiring" (the thing).';
+    }
+  });
+}
+
+/* ---------- LEVEL 4: Fill the gap (drag into the sentence) ---------- */
+function level4(){
+  const qs=[
+    {s:'Travelling long distances can be quite ___.',a:'tiring',o:['tired','tiring'],e:'🚗'},
+    {s:'We were ___ by the circus performers.',a:'amazed',o:['amazed','amazing'],e:'🎪'},
+    {s:'My sister thinks art galleries are ___.',a:'interesting',o:['interested','interesting'],e:'🖼️'},
+    {s:"I'm not very ___ about our trip to London.",a:'excited',o:['excited','exciting'],e:'🗼'},
+    {s:'I felt ___ when I fell down.',a:'embarrassed',o:['embarrassed','embarrassing'],e:'😳'},
+    {s:'We thought the theatre show was ___.',a:'boring',o:['bored','boring'],e:'🎭'},
+    {s:'The planetarium was ___! We learned a lot.',a:'fascinating',o:['fascinated','fascinating'],e:'🪐'},
+    {s:'Mum is so ___ to see a show at the Opera House.',a:'excited',o:['excited','exciting'],e:'🎟️'}
+  ];
+  let i=0,mistakes=0,locked=false;
+  shell(4,`<div class="panel"><div class="dots" id="dots"></div><div id="stage"></div></div>`);
+  function show(){
+    locked=false;const q=qs[i];const [pre,post]=q.s.split('___');
+    $('#dots').innerHTML=qs.map((_,k)=>`<i class="${k<i?'ok':k===i?'on':''}"></i>`).join('');
+    $('#stage').innerHTML=`<div class="qcard"><div class="big">${q.e}</div><p class="sent">${pre}<span class="gap zone" id="gap">?</span>${post}</p><p class="small">Drag the correct word into the gap.</p><div class="pool" style="min-height:60px">${shuffle(q.o).map(w=>`<div class="chip" data-w="${w}">${w}</div>`).join('')}</div></div><div id="msg"></div>`;
+  }
+  setupDnD($('#stage'),(chip,zone)=>{
+    if(zone.id!=='gap'||locked)return;
+    if(chip.dataset.w===qs[i].a){
+      locked=true;zone.textContent=chip.dataset.w;zone.classList.add('good');chip.style.visibility='hidden';
+      state.score+=10;updateScore();pop('+10',zone,'');sfx.ok();
+      setTimeout(()=>{i++;if(i<qs.length)show();else finish(4,mistakes<=1?3:mistakes<=4?2:1,`You finished with ${mistakes} mistake${mistakes===1?'':'s'}.`)},1100);
+    }else{
+      mistakes++;sfx.no();chip.classList.add('shake');setTimeout(()=>chip.classList.remove('shake'),450);
+      $('#msg').textContent='Not quite! Is it how someone FEELS (-ed) or what the thing is LIKE (-ing)?';
+    }
+  });
+  show();
+}
+
+/* ---------- LEVEL 5: Diary detective (timed quiz with hearts) ---------- */
+function level5(){
+  quiz(5,{time:20,lives:3,qs:[
+    {q:'Why did the family go to Muscat?',o:['For their holiday','For work','To visit friends'],a:'For their holiday',x:'They went to Muscat for their holiday.'},
+    {q:'Which evening did they go to the Royal Opera House?',o:['Saturday 29th December','Monday 31st December','Tuesday 1st January'],a:'Tuesday 1st January',x:'The Opera House ticket is for Tuesday 1st January.'},
+    {q:'What was in Al-Qurum Park?',o:['A lake and a children\'s play area','A cinema and a mall','A zoo and a market'],a:'A lake and a children\'s play area',x:'The park was lovely, with a lake and a play area.'},
+    {q:'Who has had the tickets for the show since September?',o:['Mum','Dad','The little brother'],a:'Dad',x:'Dad has had the tickets since September.'},
+    {q:'Who has wanted to see a show at the Opera House for years?',o:['Dad','The writer','Mum'],a:'Mum',x:'Mum has wanted to see a show there for years.'},
+    {q:'Why did the writer not write the diary on Sunday night?',o:['He lost his diary','He was too tired','He was at the cinema'],a:'He was too tired',x:'He was too tired after a busy day.'},
+    {q:'What did they learn about at the planetarium?',o:['Turtles','Paintings','The planets'],a:'The planets',x:'They learned a lot about the planets.'},
+    {q:'Why was the writer embarrassed in the taxi?',o:['His sister was snoring','He fell down','He lost the tickets'],a:'His sister was snoring',x:'His little sister was snoring loudly!'}
+  ]});
+}
+
+/* ---------- LEVEL 6: Emoji memory match ---------- */
+function level6(){
+  const pairs=[['😴','tired'],['🤩','excited'],['🥱','bored'],['😳','embarrassed'],['🤔','interested'],['😲','amazed']];
+  const cards=shuffle(pairs.flatMap(p=>[{k:p[1],t:p[0],emo:true},{k:p[1],t:p[1],emo:false}]));
+  let first=null,busy=false,moves=0,found=0;
+  shell(6,`<div class="panel"><p class="lead">Match each face with the word for the feeling. Find all 6 pairs in as few moves as you can!</p><div class="qhead"><span>Moves: <b id="mv">0</b></span><span>Pairs: <b id="pr">0</b> of 6</span></div><div class="mgrid">${cards.map((c,i)=>`<button class="mcard" data-i="${i}" aria-label="Hidden card ${i+1}">❓</button>`).join('')}</div></div>`);
+  $$('.mcard').forEach(b=>b.onclick=()=>{
+    if(busy||b.classList.contains('open')||b.classList.contains('match'))return;
+    const c=cards[+b.dataset.i];
+    b.classList.add('open');if(c.emo)b.classList.add('emo');b.textContent=c.t;b.setAttribute('aria-label',c.t);sfx.tick();
+    if(!first){first=b;return}
+    moves++;$('#mv').textContent=moves;
+    const fc=cards[+first.dataset.i];
+    if(fc.k===c.k){
+      [first,b].forEach(x=>{x.classList.add('match')});found++;$('#pr').textContent=found;
+      state.score+=20;updateScore();pop('+20',b,'');sfx.ok();first=null;
+      if(found===6)setTimeout(()=>finish(6,moves<=8?3:moves<=12?2:1,`You found all the pairs in ${moves} moves.`),600);
+    }else{
+      busy=true;sfx.no();const a=first;first=null;
+      setTimeout(()=>{[a,b].forEach(x=>{x.classList.remove('open','emo');x.textContent='❓'});busy=false},850);
+    }
+  });
+}
+
+/* ---------- LEVEL 7: Sentence builder ---------- */
+function level7(){
+  const S=['We are flying home to Khasab tomorrow.',"Sightseeing is tiring, so I'm going to bed.",'The art gallery was interesting, too.','I was so embarrassed when my sister snored.','The show at the Royal Opera House was great.'];
+  let i=0,wrong=0,busy=false;
+  shell(7,`<div class="panel"><div class="qhead"><span id="qn"></span></div><p class="lead">Tap the words to build the sentence in the right order. Tap a word in the box to take it back.</p><div id="ans" class="answer" aria-label="Your sentence"></div><div id="tiles" class="tiles"></div><div class="row"><button class="btn ghost" id="clr">Clear</button><button class="btn" id="chk">Check ✔️</button></div><div id="fb"></div></div>`);
+  function show(){
+    busy=false;
+    const words=S[i].split(' ');const idx=words.map((_,k)=>k);
+    let order;do{order=shuffle(idx)}while(order.join()===idx.join());
+    $('#ans').innerHTML='';
+    $('#tiles').innerHTML=order.map(k=>`<button class="tile" data-k="${k}">${esc(words[k])}</button>`).join('');
+    $('#fb').innerHTML='';$('#qn').textContent=`Sentence ${i+1} of ${S.length}`;
+  }
+  $('.panel').onclick=e=>{
+    const t=e.target.closest('.tile');if(!t||busy)return;
+    sfx.tick();
+    if(t.parentElement.id==='tiles')$('#ans').appendChild(t);else $('#tiles').appendChild(t);
+  };
+  $('#clr').onclick=()=>{if(!busy)$$('#ans .tile').forEach(t=>$('#tiles').appendChild(t))};
+  $('#chk').onclick=()=>{
+    if(busy)return;
+    const built=$$('#ans .tile').map(t=>t.textContent).join(' ');
+    if(built===S[i]){
+      busy=true;state.score+=15;updateScore();pop('+15',$('#ans'),'');sfx.ok();
+      $('#fb').innerHTML='<div class="fb good">🎉 Perfect sentence!</div>';
+      setTimeout(()=>{i++;if(i<S.length)show();else finish(7,wrong===0?3:wrong<=3?2:1,`You built all the sentences with ${wrong} wrong check${wrong===1?'':'s'}.`)},1000);
+    }else{
+      wrong++;sfx.no();const a=$('#ans');a.classList.add('shake');setTimeout(()=>a.classList.remove('shake'),450);
+      $('#fb').innerHTML='<div class="fb bad">Not yet. Check the order of the words and try again.</div>';
+    }
+  };
+  show();
+}
+
+const LV=[
+  {t:'Plan the Trip',type:'Drag and Drop',e:'🗺️',run:level1},
+  {t:'True or False?',type:'Quick Quiz',e:'⚖️',run:level2},
+  {t:'Feelings and Things',type:'Drag and Sort',e:'😴',run:level3},
+  {t:'Fill the Gap',type:'Drag into the Sentence',e:'🧩',run:level4},
+  {t:'Diary Detective',type:'Timed Quiz with Hearts',e:'🕵️',run:level5},
+  {t:'Emoji Match',type:'Memory Game',e:'🃏',run:level6},
+  {t:'Sentence Builder',type:'Tap to Build',e:'🧱',run:level7}
+];
+start();
+</script>
+</body>
+</html>
